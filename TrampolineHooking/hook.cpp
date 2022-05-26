@@ -5,6 +5,8 @@ void Hook::Detour(uintptr_t src, uintptr_t dst) const {
 	DWORD oldProtect;
 	VirtualProtect((void*)src, len, PAGE_EXECUTE_READWRITE, &oldProtect);
 
+	memset((void*) src, 0x90, len);
+
 	uintptr_t relativeAddress = dst - src - 5;
 	*(byte*) src = 0xE9;
 	*(uintptr_t*)(src + 1) = relativeAddress;
@@ -15,7 +17,7 @@ void Hook::Detour(uintptr_t src, uintptr_t dst) const {
 Hook::Hook(uintptr_t src, uintptr_t dst, int len) : gateway(0), src(src), dst(dst), len(len) {}
 
 void Hook::Apply() {
-	if (active)
+	if (active || len < 5)
 		return;
 
 	// create gateway
@@ -38,7 +40,7 @@ void Hook::Apply() {
 }
 
 void Hook::Remove() {
-	if (!active)
+	if (!active || len < 5)
 		return;
 
 	// reset gateway bytes
