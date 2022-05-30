@@ -17,8 +17,7 @@ void Hook::Detour(uintptr_t src, uintptr_t dst) const {
 Hook::Hook(uintptr_t src, uintptr_t dst, int len) : gateway(0), src(src), dst(dst), len(len) {}
 
 void Hook::Apply() {
-	if (active || len < 5)
-		return;
+	if (active || len < 5) return;
 
 	// create gateway
 	gateway = (uintptr_t) VirtualAlloc(0, len + 5, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
@@ -40,8 +39,7 @@ void Hook::Apply() {
 }
 
 void Hook::Remove() {
-	if (!active || len < 5)
-		return;
+	if (!active || len < 5) return;
 
 	// reset gateway bytes
 	DWORD oldProtect;
@@ -56,5 +54,5 @@ void Hook::Remove() {
 
 void Hook::Toggle() {
 	if (active) Remove();
-	else		Apply();
+	else	    Apply();
 }
